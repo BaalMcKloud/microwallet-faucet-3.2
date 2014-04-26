@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST['username']) && !empty($captchaChallange) && !empty($captchaResponse)) {
         if (!preg_match('/[^A-Za-z0-9\.\+\-\_\@]/', $_POST['username'])) {
             $escapedUsername = mysqli_real_escape_string($db, $_POST['username']);
-            $escapedIp = mysqli_real_escape_string($db, ip2long($ip));
+            $escapedIp = mysqli_real_escape_string($db, ip2long($ip) > 0x7FFFFFFF ? ip2long($ip) - 0x100000000 : ip2long($ip));
             $result = mysqli_query($db, "select * from microfaucet_users where username = '$escapedUsername' or ip = '$escapedIp' order by claimed_at desc");
             if ($result) {
                 $row = mysqli_fetch_assoc($result);
@@ -293,7 +293,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <center><iframe src="http://ads.landofbitcoin.com/microfaucet-200/" scrolling="no" style="width: 200px; height: 200px; border: 0; padding:0; overflow: hidden;" allowtransparency="true"></iframe></center>
         </div>
     </div>
-    <p class="text-center">Powered by <a target="_blank" href="https://www.microwallet.org/">Microwallet</a>. Get <a target="_blank" href="http://www.landofbitcoin.com/">free bitcoins on Land of Bitcoin</a>!</p>
+    <p class="text-center">Powered by <a target="_blank" href="https://www.microwallet.org/api">Microfaucet 3.2</a>. Get <a target="_blank" href="http://www.landofbitcoin.com/">free bitcoins on Land of Bitcoin</a>!</p>
 </div>
 
 </body>
