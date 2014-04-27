@@ -20,13 +20,15 @@ $faucetDonateBitcoinAddress = '';
 // How often can the users claim rewards in minutes, 180 = every 3 hours
 $intervalInMinutes = 180;
 
-// List of rewards in satoshi, 1 satoshi = 0.00000001 BTC.
-$rewards = array(
-    500,
-    400,
-    300,
-    200,
-    100,
+// Each reward entry is in the follwing format: array_fill(0,WEIGHT,REWARD) where WEIGHT is how frequently you want the REWARD to occur.
+$rewards = array_merge(array_fill(0,1,500),
+                       array_fill(0,10,200),
+                       array_fill(0,100,150),
+                       array_fill(0,100,100),
+                       array_fill(0,50,75),
+                       array_fill(0,50,50),
+                       array_fill(0,25,25),
+                       array_fill(0,20,10)
 );
 
 // Display the faucet balance or hide it? true or false
@@ -237,9 +239,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="col-sm-3">
             <h3 class="text-center">Rewards here</h3>
             <hr />
-            <?php foreach ($rewards as $reward): ?>
-                <h5 class="text-center"><?php echo htmlspecialchars($reward); ?> satoshi</h5>
-            <?php endforeach; ?>
+            <h5 class="text-center">
+            <?php            
+	       	$weightCount = 1;
+	       	$weightArray = array();
+	       	$percentage = 0.0;
+	       	
+	       	foreach ($rewards as $reward) {
+	       		if($rewardAmount != $reward) {
+	       			if($rewardAmount) {
+	       				$percentage = ($weightCount/count($rewards)) * 100;
+	       				echo number_format($percentage, 2, '.', ','), "%<br />\n";
+	       			}
+	       			$rewardAmount = $reward;
+	       						
+	       			echo "$reward satoshi: ";
+	       						
+	       			$weightArray[$reward] = $weightCount;
+       				$weightCount = 1;
+       			} else {
+       				$weightCount++;
+				       $weightArray[$reward] = $weightCount;
+			       }
+			       				
+		       }
+	       	$percentage = ($weightCount/count($rewards)) * 100;
+       		echo number_format($percentage, 2, '.', ','), "%<br />\n";
+            ?>
+            </h5>
             <hr />
             <h5 class="text-center">Claim every <?php echo htmlspecialchars($interval); ?>!</h5>
             <hr />
